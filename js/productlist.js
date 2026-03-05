@@ -3,6 +3,11 @@ const myCategory = params.get("category");
 
 const listContainer = document.querySelector(".product-grid");
 
+const filterWomenBtn = document.querySelector("#filterWomenBtn");
+const showAllBtn = document.querySelector("#showAllBtn");
+
+let allProducts = [];
+
 const fetchUrl = myCategory
   ? `https://kea-alt-del.dk/t7/api/products?category=${encodeURIComponent(myCategory)}`
   : "https://kea-alt-del.dk/t7/api/products";
@@ -10,7 +15,10 @@ const fetchUrl = myCategory
 function getProducts() {
   fetch(fetchUrl)
     .then((res) => res.json())
-    .then((products) => showProducts(products));
+    .then((products) => {
+      allProducts = products; // gem alle produkter
+      showProducts(products);
+    });
 }
 
 function showProducts(products) {
@@ -27,5 +35,17 @@ function showProducts(products) {
     `;
   });
 }
+
+function filterByGender(targetGender) {
+  const filtered = allProducts.filter(
+    (product) =>
+      (product.gender || "").toLowerCase() === targetGender.toLowerCase(),
+  );
+
+  showProducts(filtered);
+}
+
+filterWomenBtn.addEventListener("click", () => filterByGender("Women"));
+showAllBtn.addEventListener("click", () => showProducts(allProducts));
 
 getProducts();
